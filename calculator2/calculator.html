@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>계산기</title>
+    <style>
+        #calculator {
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            color: wheat;
+        }
+        
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 60px;
+            height: 40px;
+            font-size: 24px;
+            background-color: #555;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        button.bigSize {
+            width: 140px;
+        }
+        button:active {
+            background-color: #777;
+        }
+        button {color: wheat}
+        #operator {
+            width:50px;
+            height: 50px;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        #result {
+            width:225px;
+            height: 50px;
+            text-align: right;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="calculator">
+        <input readonly id = "operator">
+        <input readonly id = "result">
+        <div class = "row">
+            <button class = "bigSize" id = "clear">c</button>
+            <button id = "minus">-</button>
+            <button id = "back">&larr;</button>
+        </div>
+        <div class = "row">
+            <button id = "num_7">7</button>
+            <button id = "num_8">8</button>
+            <button id = "num_9">9</button>
+            <button id = "plus">+</button>
+        </div>
+        <div class = "row">
+            <button id = "num_4">4</button>
+            <button id = "num_5">5</button>
+            <button id = "num_6">6</button>
+            <button id = "multiple">*</button>
+        </div>
+        <div class = "row">
+            <button id = "num_1">1</button>
+            <button id = "num_2">2</button>
+            <button id = "num_3">3</button>
+            <button id = "divide">/</button>
+        </div>
+        <div class = "row">
+            <button class = "bigSize" id = "num_0">0</button>
+            <button class = "bigSize" id = "calculate">=</button>
+        </div>
+    </div>
+
+    <script>
+        let numOne ='';
+        let numTwo ='';
+        let operator = '';
+        
+
+        const $operator = document.querySelector('#operator');
+        const $result = document.querySelector('#result');
+        
+        function init() {
+            numOne = '';
+            numTwo = '';
+            operator = '';
+            $result.value = '';
+        }
+        const onClickNumber = (event) => {
+            if(!operator){
+                numOne += event.target.textContent;
+                $result.value += event.target.textContent;
+                return;
+            }
+            if(!numTwo){
+                $result.value = '';
+            }
+            numTwo += event.target.textContent;
+            $result.value += event.target.textContent 
+        }
+        // html 숫자들 가져오기
+        const numBtn = (num) => {
+            document.querySelector(`#num_${num}`).addEventListener('click', onClickNumber);
+        };
+        
+        // 숫자 버튼에 이벤트 등록
+        for (let i = 0; i <= 9; i++) {
+            numBtn(i);
+        }
+
+        const onClickOperator = (op) => () => {
+            if(numOne){
+                operator = op;
+                $operator.value = op;
+            }else{
+                alert('숫자 먼저 입력하세용');
+            }
+        };
+        //html 연산자 가져오기
+        document.querySelector('#plus').addEventListener('click', onClickOperator('+'));
+        document.querySelector('#minus').addEventListener('click', onClickOperator('-'));
+        document.querySelector('#multiple').addEventListener('click', onClickOperator('*'));
+        document.querySelector('#divide').addEventListener('click', onClickOperator('/'));
+
+        document.querySelector('#calculate').addEventListener('click', () => {
+            if(operator == '+'){
+                const temp = numOne; //+=+= 할때 이용
+                if(numTwo){
+                    $result.value = parseInt(numOne) + parseInt(numTwo);
+                }else{
+                    numTwo = temp;
+                    $result.value = parseInt(numOne) + parseInt(numTwo);
+                    numOne = result.value
+                }
+            }
+            if(numTwo){
+                switch(operator){
+                    case '-':
+                        $result.value = numOne - numTwo;
+                        break;
+                    case '*':
+                        $result.value = numOne * numTwo;
+                        break;
+                    case '/':
+                        //0으로는 나누는 경우 예외처리
+                        if(numTwo == 0){
+                            alert('0으로는 못나눠용');
+                            init();
+                        }else{
+                            $result.value = numOne / numTwo;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                $operator.value = '';
+                operator = '';
+                numTwo = '';
+                numOne = $result.value;
+            }else{
+                alert('숫자 먼저 입력하세용');
+            }
+        });
+        //C 버튼 구현
+        document.querySelector('#clear').addEventListener('click', () => {
+            init();
+        });
+        document.querySelector('#back').addEventListener('click', () => {
+            if(!operator){
+                numOne = numOne.slice(0, -1);
+                $result.value = $result.value.slice(0, -1);
+                return;
+            }
+            if(!numTwo){
+                $result.value = '';
+            }
+            //문자열 자르기 함수
+            numTwo = numTwo.slice(0, -1);
+            $result.value = $result.value.slice(0, -1);
+        })
+
+    </script>
+</body>
+</html>
